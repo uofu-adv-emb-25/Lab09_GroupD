@@ -80,32 +80,32 @@ How would you go about proving that your model is correct?
   
 **Update Oct 14** the `ringing` column should be something like "time elapsed" to reflect the 10-second delay. That way, it is an event related to the `alarm_on` state of the world (instead of being redundant).
 
-| number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | ringing | safety_hazard |
-|--------|-----------|----------|--------------------|--------------------|----------------|----------------|--------------|--------------|---------|---------------|
-| 0      | 0         | 0        | 0                  | 0                  |                |                |              |              |         |               |
-| 1      | 0         | 0        | 0                  | 1                  |                |                |              |              |         |               |
-| 2      | 0         | 0        | 1                  | 0                  |                |                |              |              |         |               |
-| 3      | 0         | 0        | 1                  | 1                  |                |                |              |              |         |               |
-| 4      | 0         | 1        | 0                  | 0                  |                |                |              |              |         |               |
-| 5      | 0         | 1        | 0                  | 1                  |                |                |              |              |         |               |
-| 6      | 0         | 1        | 1                  | 0                  |                |                |              |              |         |               |
-| 7      | 0         | 1        | 1                  | 1                  |                |                |              |              |         |               |
-| 8      | 1         | 0        | 0                  | 0                  |                |                |              |              |         |               |
-| 9      | 1         | 0        | 0                  | 1                  |                |                |              |              |         |               |
-| 10     | 1         | 0        | 1                  | 0                  |                |                |              |              |         |               |
-| 11     | 1         | 0        | 1                  | 1                  |                |                |              |              |         |               |
-| 12     | 1         | 1        | 0                  | 0                  |                |                |              |              |         |               |
-| 13     | 1         | 1        | 0                  | 1                  |                |                |              |              |         |               |
-| 14     | 1         | 1        | 1                  | 0                  |                |                |              |              |         |               |
-| 15     | 1         | 1        | 1                  | 1                  |                |                |              |              |         |               |
+| number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | time-elapsed | safety_hazard |
+|--------|-----------|----------|--------------------|--------------------|----------------|----------------|--------------|--------------|--------------|---------------|
+| 0      | 0         | 0        | 0                  | 0                  | 6              | 5              | 16           | 16           | 0            |               |
+| 1      | 0         | 0        | 0                  | 1                  |                |                |              |              |              | 18,19         |
+| 2      | 0         | 0        | 1                  | 0                  |                |                |              |              |              | 18,19         |
+| 3      | 0         | 0        | 1                  | 1                  |                |                |              |              |              | 18,19         |
+| 4      | 0         | 1        | 0                  | 0                  | 6              | 5              | 16           | 16           | 0            |               |
+| 5      | 0         | 1        | 0                  | 1                  |                |                |              |              |              |               |
+| 6      | 0         | 1        | 1                  | 0                  |                |                |              |              |              |               |
+| 7      | 0         | 1        | 1                  | 1                  |                |                |              |              |              | 18            |
+| 8      | 1         | 0        | 0                  | 0                  |                |                |              |              |              | 20            |
+| 9      | 1         | 0        | 0                  | 1                  |                |                |              |              |              | 19            |
+| 10     | 1         | 0        | 1                  | 0                  |                |                |              |              |              | 19            |
+| 11     | 1         | 0        | 1                  | 1                  |                |                |              |              |              | 19            |
+| 12     | 1         | 1        | 0                  | 0                  |                |                |              |              |              |               |
+| 13     | 1         | 1        | 0                  | 1                  |                |                |              |              |              |               |
+| 14     | 1         | 1        | 1                  | 0                  |                |                |              |              |              |               |
+| 15     | 1         | 1        | 1                  | 1                  |                |                |              |              |              |               |
 
 | number | invariant                                                                              |
 |--------|----------------------------------------------------------------------------------------|
-| 1      | ~(northbound_depart ^ ~northbound_present V southbound_depart ^ ~southbound_present)   |
-| 2      | ~(northbound_approach ^ northbound_present V southbound_approach ^ southbound_present) |
-| 3      | ~(~arms_down ^ (nourthbound_present V southbound_present))                             |
-| 4      | ~(~alarm_on ^ (nourthbound_present V southbound_present))                              |
-| 5      | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
+| 16     | ~(northbound_depart ^ ~northbound_present V southbound_depart ^ ~southbound_present)   |
+| 17     | ~(northbound_approach ^ northbound_present V southbound_approach ^ southbound_present) |
+| 18     | ~(~arms_down ^ (nourthbound_present V southbound_present))                             |
+| 19     | ~(~alarm_on ^ (nourthbound_present V southbound_present))                              |
+| 20     | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
 
 ## Specification vs. implementation
 1. Start drawing an FSM using the table you just made.
