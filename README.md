@@ -1,27 +1,4 @@
-# Formal Verification
-In this lab, we'll get an introduction to the concept of system modeling and formal verification.
-
-# Learning objectives
-1. Model systems with finite state machines (FSM).
-1. Describe invariant properties of a system.
-1. Evaluate correctness of a model.
-1. Understand limitations and benefits of model checking.
-
-# Prelab
-## First session.
-1. Read sections 3.1-3.3 and 3.6 in Lee & Seshia.
-1. Read section 14.1 and 14.2 in Lee & Seshia
-1. Draw a finite state machine for the train crossing problem given below. You should have a complete diagram **ready for class**.
-
-* Do not create an extended state machine, we want to restrict our analysis to an exclusively finite system.
-* Don't use a semaphore, encode multiple train interactions as distinct states.
-* There are many styles of drawing FSMs, try to follow the style presented in Lee & Seshia.
-* You will want to make your FSM reactive to events, and avoid output side effects.
-* Capture as much of the problem into states as possible.
-
-If you would like to draw your FSM on the computer, Graphviz is a great tool for making graphs.
-All drawings provided were done with Graphviz and the source files are in the repository.
-To render a graph just run `dot mygraph.dot -Tpdf -o mygraph.pdf`
+# Lab09
 
 ### Railroad crossing problem
 
@@ -40,47 +17,55 @@ To render a graph just run `dot mygraph.dot -Tpdf -o mygraph.pdf`
     1. When no train is present the barrier raises.
     1. After 10 seconds the alarm stops.
 
-
-## Second session.
-1. Read section 15 in Lee & Seshia
-
-# Lab
-We will be mostly writing documentation for a system in this lab.
-Provide all your documentation as Markdown document(s) saved in a repository.
-Upload PDFs or pictures of any diagrams.
-Remember to commit your work regularly.
-
 ## Invariants
 1. With your partner, write down a set of invariants your system should have, with a specific emphasis on safety invariants.
 1. You should be able to identify specific invariant conditions, that if violated, represent a unsafe condition or safety hazard.
 1. Also consider invariants that are assumptions made about the environment or the scenario.
 1. Write your invariants in the form a logical predicate, i.e. a statement that must be true.
 
-Example invariants:
-* "An approach signal will always precede a depart signal"
-* "The power will never be interrupted"
-* "Trains on each track only run in one direction."
+Environment Invariants:
+* Trains don't reverse (go in expected direction).
+    * Potential for sensors to activate in unexpected order.
+* Trains can't depart before approaching.
+    * Expects that the arrive sensor works as intended and that there are initially no trains on the track. Messes with state transitions.
+    * ~(northbound_depart ^ ~northbound_present V southbound_depart ^ ~southbound_present)
+* Trains can't approach (in same direction) until after previous train has departed.
+    * Trains can crash. This is an issue beyond the scope of this problem.
+    * ~(northbound_approach ^ northbound_present V southbound_approach ^ southbound_present)
+* System is in working condition.
+    * This is an issue beyond the scope of the FSM.
+* Nothing obstructs the tracks.
+    * Obvious safetly concern outside of our interest.
+* There are exactly two rails, northbound and southbound, and exactly one crossing.
+
+System Invariants:
+* Barrier cannot be up while trains are present.
+    * Provides no visual queue and no physical barrier between objects and moving train.
+    * ~(~arms_down ^ (nourthbound_present V southbound_present))
+* Alarm cannot be off while train is approaching or present.
+    * Must provide an audio queue for potentially very dangerous moving train.
+    * ~(~alarm_on ^ (nourthbound_present V southbound_present))
+* Barrier cannot be down while there is no oncomming or departing train and no train present.
+    * Disrupts traffic unneccessarily.
+    * ~(barrier_down ^ ~((nourthbound_present V southbound_present)))
+
+
+
 ## Varying invariants
 Answer the question: does there exist a sequence of events, such that an invariant is not longer true?
 
 1. Evaluate the [example FSM](example.pdf).
 1. Find a counter-example sequence that makes an invariant false. Write it down.
-
-Proving that a system violates an invariant is simple - just provide a counter example.
-Proving the opposite is incredibly difficult. You must either exhaustively demonstrate all possible inputs, or otherwise mathematically prove the invariants.
-
-You may recall when I graded this question on the final last semester that I graded the exam using exactly this method.
-I started at the beginning, and provided a series of events I knew tended to break models.
-Once the machine was in an unsafe state, it was marked "safety hazard".
-If I failed to find a violation, it was marked "probably safe".
-Note the "probably"! Just because I could not find a counter example does not prove anything.
-Some models got marked "technically safe", because any possible sequence immediately got the model stuck with the arms down.
-Not very useful, but did not create a safety hazard!
+* **Sequence**: 
+    1. Start -> {idle}
+    1. sb_approach -> {ringing, arms up}
+    1. nb_approach -> {ringing, arms up}
+    1. elapsed -> {ringing, arms down}
+    1. sb_depart -> {ringing, arms up}
+        * Invariant violated. (~arms_down ^ nb_present) violates ~(~arms_down ^ (nourthbound_present V southbound_present))
 
 ## Check your work
-1. Exchange the FSM you drew for the prelab with your partner.
-1. Attempt to find a counter-example for your partner's FSM.
-1. If you do find a counter-example, work with your partner to fix the FSM for that counter-example.
+* We have checked ours and found problems.
 
 ## Prove it.
 How would you go about proving that your model is correct?
@@ -114,9 +99,13 @@ How would you go about proving that your model is correct?
 | 14     | 1         | 1        | 1                  | 0                  |                |                |              |              |         |               |
 | 15     | 1         | 1        | 1                  | 1                  |                |                |              |              |         |               |
 
-| number | invariant |
-|--------|-----------|
-| 16     |           |
+| number | invariant                                                                              |
+|--------|----------------------------------------------------------------------------------------|
+| 1      | ~(northbound_depart ^ ~northbound_present V southbound_depart ^ ~southbound_present)   |
+| 2      | ~(northbound_approach ^ northbound_present V southbound_approach ^ southbound_present) |
+| 3      | ~(~arms_down ^ (nourthbound_present V southbound_present))                             |
+| 4      | ~(~alarm_on ^ (nourthbound_present V southbound_present))                              |
+| 5      | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
 
 ## Specification vs. implementation
 1. Start drawing an FSM using the table you just made.
