@@ -1,4 +1,5 @@
 # Lab09
+Lab09 FSM implementation for Kasey Kemp and Adam Billings.
 
 ### Railroad crossing problem
 
@@ -87,8 +88,6 @@ How would you go about proving that your model is correct?
 1. For each row, write down the number of the state your system will transition to on that event.
    1. If an event violates an invariant (e.g. event not allowed in that state), write down the number of the invariant.
    1. If an event has no effect, you can stay in the same state.
-  
-**Update Oct 14** the `ringing` column should be something like "time elapsed" to reflect the 10-second delay. That way, it is an event related to the `alarm_on` state of the world (instead of being redundant).
 
 | number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | time-elapsed | safety_hazard |
 |--------|-----------|----------|--------------------|--------------------|----------------|----------------|--------------|--------------|--------------|---------------|
@@ -126,26 +125,3 @@ How would you go about proving that your model is correct?
     1. It's important to account for behavior that could occur outside your expectations, but we need to maintain a level of abstraction. Getting struck by lightning is possible, but not something you plan for.
 
 Is your new FSM equivalent to the FSMs from the previously steps?
-# Model checking
-In the lab, we tried several techniques by hand to verify a system model.
-Even for a simple machine, the number of possible states grows exponentially.
-This is called "state space explosion", and is the primary difficulty when checking models.
-There are a wide variety of computer programs called "model checkers" that provide automation for searching state space.
-You can also encode your model into a format that can be used with a tool like a SAT solver, which will prove the model is correct.
-We started down that path with the state table, encoding each state into a binary number.
-Often we will have a specification model, and the goal is to show equivalence with our implementation.
-
-# Next steps
-This lab is designed to give a taste for the topic of formal methods.
-If you want more, there a courses offered that go into detail.
-
-Priyank Kalla teaches a course on verification focusing on hardware logic.
-ECE6715 Verification of Digital Circuits (Fall)
-
-Ben Greenman teachs a course on formal verification of software.
-CS6110 Software Verification (Spring)
-
-Both classes are highly recommended.
-
-# Reference implementation
-No reference implementation is provided for this lab.
