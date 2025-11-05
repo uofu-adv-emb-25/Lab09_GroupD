@@ -42,12 +42,20 @@ System Invariants:
 * Barrier cannot be up while trains are present.
     * Provides no visual queue and no physical barrier between objects and moving train.
     * ~(~arms_down ^ (nourthbound_present V southbound_present))
+    * Due to troubles with interpreting an exact definition of "train_present," we will be ommitting this invariant in the table.
+        * This is due to variations in definition for "train_present" and whether this will be true for "train_approaching" and "train_departing"
+* Train cannot depart while arms become raised. 
+    * This implies that the train was present (actively crossing intersection) while the arms were raised.
+    * ~(~arms_down ^ (northbound_depart V southbound_depart))
 * Alarm cannot be off while train is approaching or present.
     * Must provide an audio queue for potentially very dangerous moving train.
     * ~(~alarm_on ^ (nourthbound_present V southbound_present))
 * Barrier cannot be down while there is no oncomming or departing train and no train present.
     * Disrupts traffic unneccessarily.
     * ~(barrier_down ^ ~((nourthbound_present V southbound_present)))
+* Arms down while alarm off
+    * The alarm should occur first and stop after
+    * ~(~alarm_on ^ ~arms_down)
 
 
 
@@ -66,6 +74,8 @@ Answer the question: does there exist a sequence of events, such that an invaria
 
 ## Check your work
 * We have checked ours and found problems.
+Below are the initial FSM graphs.
+![Initial FSM Graph 1](/resources/images/InitialFSM(1).png "Initial FSM Graph")
 
 ## Prove it.
 How would you go about proving that your model is correct?
@@ -83,29 +93,30 @@ How would you go about proving that your model is correct?
 | number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | time-elapsed | safety_hazard |
 |--------|-----------|----------|--------------------|--------------------|----------------|----------------|--------------|--------------|--------------|---------------|
 | 0      | 0         | 0        | 0                  | 0                  | 6              | 5              | 16           | 16           | 0            |               |
-| 1      | 0         | 0        | 0                  | 1                  |                |                |              |              |              | 18,19         |
-| 2      | 0         | 0        | 1                  | 0                  |                |                |              |              |              | 18,19         |
-| 3      | 0         | 0        | 1                  | 1                  |                |                |              |              |              | 18,19         |
-| 4      | 0         | 1        | 0                  | 0                  | 6              | 5              | 16           | 16           | 0            |               |
-| 5      | 0         | 1        | 0                  | 1                  |                |                |              |              |              |               |
-| 6      | 0         | 1        | 1                  | 0                  |                |                |              |              |              |               |
-| 7      | 0         | 1        | 1                  | 1                  |                |                |              |              |              | 18            |
-| 8      | 1         | 0        | 0                  | 0                  |                |                |              |              |              | 20            |
-| 9      | 1         | 0        | 0                  | 1                  |                |                |              |              |              | 19            |
-| 10     | 1         | 0        | 1                  | 0                  |                |                |              |              |              | 19            |
-| 11     | 1         | 0        | 1                  | 1                  |                |                |              |              |              | 19            |
-| 12     | 1         | 1        | 0                  | 0                  |                |                |              |              |              |               |
-| 13     | 1         | 1        | 0                  | 1                  |                |                |              |              |              |               |
-| 14     | 1         | 1        | 1                  | 0                  |                |                |              |              |              |               |
-| 15     | 1         | 1        | 1                  | 1                  |                |                |              |              |              |               |
+| 1      | 0         | 0        | 0                  | 1                  |                |                |              |              |              | 18            |
+| 2      | 0         | 0        | 1                  | 0                  |                |                |              |              |              | 18            |
+| 3      | 0         | 0        | 1                  | 1                  |                |                |              |              |              | 18            |
+| 4      | 0         | 1        | 0                  | 0                  | 6              | 5              | 16,20        | 16,20        | 0            |               |
+| 5      | 0         | 1        | 0                  | 1                  | 7              | 17             | 16,20        | 20           | 13           |               |
+| 6      | 0         | 1        | 1                  | 0                  | 17             | 7              | 20           | 16,20        | 14           |               |
+| 7      | 0         | 1        | 1                  | 1                  | 17             | 17             | 20           | 20           | 15           |               |
+| 8      | 1         | 0        | 0                  | 0                  |                |                |              |              |              | (19), 21      |
+| 9      | 1         | 0        | 0                  | 1                  |                |                |              |              |              | 18, 21        |
+| 10     | 1         | 0        | 1                  | 0                  |                |                |              |              |              | 18, 21        |
+| 11     | 1         | 0        | 1                  | 1                  |                |                |              |              |              | 18, 21        |
+| 12     | 1         | 1        | 0                  | 0                  |                |                |              |              |              | (19)          |
+| 13     | 1         | 1        | 0                  | 1                  | 15             | 17             | 16           | 4            | 13           |               |
+| 14     | 1         | 1        | 1                  | 0                  | 17             | 15             | 4            | 16           | 14           |               |
+| 15     | 1         | 1        | 1                  | 1                  | 17             | 17             | 13           | 14           | 15           |               |
 
 | number | invariant                                                                              |
 |--------|----------------------------------------------------------------------------------------|
 | 16     | ~(northbound_depart ^ ~northbound_present V southbound_depart ^ ~southbound_present)   |
 | 17     | ~(northbound_approach ^ northbound_present V southbound_approach ^ southbound_present) |
-| 18     | ~(~arms_down ^ (nourthbound_present V southbound_present))                             |
-| 19     | ~(~alarm_on ^ (nourthbound_present V southbound_present))                              |
-| 20     | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
+| 18     | ~(~alarm_on ^ (nourthbound_present V southbound_present))                              |
+| 19     | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
+| 20     | ~(~arms_down ^ (northbound_depart V southbound_depart))                                |
+| 21     | ~(~alarm_on ^ ~arms_down)                                                              |
 
 ## Specification vs. implementation
 1. Start drawing an FSM using the table you just made.
