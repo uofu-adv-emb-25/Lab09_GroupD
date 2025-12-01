@@ -1,0 +1,36 @@
+digraph {
+    idle [label = "Idle"];
+    nba [label = "NB Approaching"];
+    bba [label = "Both Approaching"];
+    sba [label = "SB Approaching"];
+    nbp [label = "NB Present"];
+    bbp [label = "Both Present"];
+    sbp [label = "SB Present"];
+    dp [label = "Departing"];
+
+    idle -> nba [label = "northbound_approach ^ ~southbound_approach /\n start_timer, alarm := on"];
+    idle -> bba [label = "northbound_approach ^ southbound_approach /\n start_timer, alarm := on"];
+    idle -> sba [label = "~northbound_approach ^ southbound_approach /\n start_timer, alarm := on"];
+
+    nba -> bba [label = "~timer ^ southbound_approach"];
+    sba -> bba [label = "~timer ^ northbound_approach"];
+
+    nba -> nbp [label = "timer ^ ~southbound_approach /\n barrier := lowered"];
+    nba -> bbp [label = "timer ^ southbound_approach /\n barrier := lowered"];
+    bba -> bbp [label = "timer / barrier := lowered"];
+    sba -> sbp [label = "timer ^ ~northbound_approach /\n barrier := lowered"];
+    sba -> bbp [label = "timer ^ northbound_approach /\n barrier := lowered"];
+
+    nbp -> bbp [label = "southbound_approach"];
+    sbp -> bbp [label = "northbound_approach"];
+    bbp -> sbp [label = "northbound_depart"];
+    bbp -> nbp [label = "southbound_depart"];
+
+    nbp -> dp [label = "northbound_depart / start_timer"];
+    sbp -> dp [label = "southbound_depart / start_timer"];
+
+    dp -> nba [label = "northbound_approach ^ ~southbound_approach /\n start_timer"];
+    dp -> bba [label = "northbound_approach ^ southbound_approach /\n start_timer"];
+    dp -> sba [label = "~northbound_approach ^ southbound_approach /\n start_timer"];
+    dp -> idle [label = "~northbound_approach ^ ~southbound_approach ^ timer /\n alarm := off"];
+}

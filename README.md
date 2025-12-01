@@ -76,7 +76,8 @@ Answer the question: does there exist a sequence of events, such that an invaria
 ## Check your work
 * We have checked ours and found problems.
 Below are the initial FSM graphs.
-![Initial FSM Graph 1](/resources/images/InitialFSM(1).png "Initial FSM Graph")
+![Initial FSM Graph 1](/resources/images/InitialFSM(1).png "Initial FSM Graph 1")
+![Initial FSM Graph 2](/resources/images/train.pdf "Initial FSM Grapg 2")
 
 ## Prove it.
 How would you go about proving that your model is correct?
