@@ -74,10 +74,14 @@ Answer the question: does there exist a sequence of events, such that an invaria
         * Invariant violated. (~arms_down ^ nb_present) violates ~(~arms_down ^ (nourthbound_present V southbound_present))
 
 ## Check your work
-* We have checked ours and found problems.
+* We have checked ours and found problems in the second FSM
+The state transitions never raise the gate, meaning any sequence of events involving returning to the idle state will violate ~(barrier_down ^ ~((nourthbound_present V southbound_present))).
 Below are the initial FSM graphs.
 ![Initial FSM Graph 1](/resources/images/InitialFSM(1).png "Initial FSM Graph 1")
-![Initial FSM Graph 2](/resources/images/train.pdf "Initial FSM Grapg 2")
+![Initial FSM Graph 2](/resources/images/InitialFSM(2).png "Initial FSM Graph 2")
+
+The repaired second FSM is shown below.
+![Fixed FSM Graph 2](/resources/images/FixedFSM(2).png "Fixed FSM Graph 2")
 
 ## Prove it.
 How would you go about proving that your model is correct?

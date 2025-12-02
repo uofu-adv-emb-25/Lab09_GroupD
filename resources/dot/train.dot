@@ -26,8 +26,8 @@ digraph {
     bbp -> sbp [label = "northbound_depart"];
     bbp -> nbp [label = "southbound_depart"];
 
-    nbp -> dp [label = "northbound_depart / start_timer"];
-    sbp -> dp [label = "southbound_depart / start_timer"];
+    nbp -> dp [label = "northbound_depart / start_timer; barrier := raised"];
+    sbp -> dp [label = "southbound_depart / start_timer; barrier := raised"];
 
     dp -> nba [label = "northbound_approach ^ ~southbound_approach /\n start_timer"];
     dp -> bba [label = "northbound_approach ^ southbound_approach /\n start_timer"];
