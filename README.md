@@ -57,6 +57,9 @@ System Invariants:
 * Arms down while alarm off
     * The alarm should occur first and stop after
     * ~(~alarm_on ^ ~arms_down)
+* The timer will not run while the arms are down
+    * The timer is for the alarm with the arms up
+    * ~(barrier_down ^ timer_elapsed)
 
 
 
@@ -94,7 +97,7 @@ How would you go about proving that your model is correct?
    1. If an event violates an invariant (e.g. event not allowed in that state), write down the number of the invariant.
    1. If an event has no effect, you can stay in the same state.
 
-| number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | time-elapsed | safety_hazard |
+| number | arms_down | alarm_on | northbound_present | southbound_present | north_approach | south_approach | north_depart | south_depart | time_elapsed | safety_hazard |
 |--------|-----------|----------|--------------------|--------------------|----------------|----------------|--------------|--------------|--------------|---------------|
 | 0      | 0         | 0        | 0                  | 0                  | 6              | 5              | 16           | 16           | 0            |               |
 | 1      | 0         | 0        | 0                  | 1                  |                |                |              |              |              | 18            |
@@ -109,9 +112,9 @@ How would you go about proving that your model is correct?
 | 10     | 1         | 0        | 1                  | 0                  |                |                |              |              |              | 18, 21        |
 | 11     | 1         | 0        | 1                  | 1                  |                |                |              |              |              | 18, 21        |
 | 12     | 1         | 1        | 0                  | 0                  |                |                |              |              |              | (19)          |
-| 13     | 1         | 1        | 0                  | 1                  | 15             | 17             | 16           | 4            | 13           |               |
-| 14     | 1         | 1        | 1                  | 0                  | 17             | 15             | 4            | 16           | 14           |               |
-| 15     | 1         | 1        | 1                  | 1                  | 17             | 17             | 13           | 14           | 15           |               |
+| 13     | 1         | 1        | 0                  | 1                  | 15             | 17             | 16           | 4            | 22           |               |
+| 14     | 1         | 1        | 1                  | 0                  | 17             | 15             | 4            | 16           | 22           |               |
+| 15     | 1         | 1        | 1                  | 1                  | 17             | 17             | 13           | 14           | 22           |               |
 
 | number | invariant                                                                              |
 |--------|----------------------------------------------------------------------------------------|
@@ -121,6 +124,7 @@ How would you go about proving that your model is correct?
 | 19     | ~(barrier_down ^ ~((nourthbound_present V southbound_present)))                        |
 | 20     | ~(~arms_down ^ (northbound_depart V southbound_depart))                                |
 | 21     | ~(~alarm_on ^ ~arms_down)                                                              |
+| 22     | ~(barrier_down ^ timer_elapsed)                                                        |
 
 ## Specification vs. implementation
 1. Start drawing an FSM using the table you just made.
@@ -129,4 +133,9 @@ How would you go about proving that your model is correct?
 1. If an event violates an invariant that represents an impossible event or operating assumption, leave it off your machine.
     1. It's important to account for behavior that could occur outside your expectations, but we need to maintain a level of abstraction. Getting struck by lightning is possible, but not something you plan for.
 
+The FSM from the table is shown below.
+![Table FSM Graph](/resources/images/tableFSM.png "Table FSM Graph")
+
 Is your new FSM equivalent to the FSMs from the previously steps?
+
+With the exception of the events that occur on the edges, this FSM is equivalent to those from earlier.
